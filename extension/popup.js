@@ -695,19 +695,19 @@ document.getElementById("submit-feedback-btn")?.addEventListener("click", async 
   setFeedbackStatus("loading", "Sending feedback...");
 
   try {
-    // Send feedback to a backend or email service
-    const feedbackData = {
-      type,
-      message,
-      email: email || "Not provided",
-      timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent
-    };
+    // Send feedback via Formspree
+    const feedbackData = new FormData();
+    feedbackData.append("email", email || "Not provided");
+    feedbackData.append("feedback_type", type);
+    feedbackData.append("message", message);
+    feedbackData.append("timestamp", new Date().toISOString());
 
-    // Store in Chrome storage for now (you can integrate with a backend later)
-    chrome.storage.local.get(["feedback"], ({ feedback = [] }) => {
-      feedback.push(feedbackData);
-      chrome.storage.local.set({ feedback });
+    const response = await fetch("https://formspree.io/f/myzbyyqa", {
+      method: "POST",
+      body: feedbackData
+    });
+
+    if (response.ok) {
       setFeedbackStatus("success", "Thank you for your feedback! 🙏");
       
       // Reset form after 2 seconds
@@ -716,11 +716,14 @@ document.getElementById("submit-feedback-btn")?.addEventListener("click", async 
         document.getElementById("feedback-message").value = "";
         document.getElementById("feedback-email").value = "";
         setFeedbackStatus("", "");
+        hideFeedbackPage();
       }, 2000);
-    });
+    } else {
+      setFeedbackStatus("error", "Error sending feedback. Please try again.");
+    }
   } catch (error) {
     console.error("Error submitting feedback:", error);
-    setFeedbackStatus("error", "Error sending feedback. Please try again.");
+    setFeedbackStatus("error", "Error sending feedback. Please check your connection.");
   }
 });
 
