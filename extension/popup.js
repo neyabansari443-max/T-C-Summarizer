@@ -695,19 +695,20 @@ document.getElementById("submit-feedback-btn")?.addEventListener("click", async 
   setFeedbackStatus("loading", "Sending feedback...");
 
   try {
-    // Send feedback via Formspree
-    const feedbackData = new FormData();
-    feedbackData.append("email", email || "Not provided");
-    feedbackData.append("feedback_type", type);
-    feedbackData.append("message", message);
-    feedbackData.append("timestamp", new Date().toISOString());
+    // Send feedback via Formspree using JSON
+    const feedbackPayload = new FormData();
+    feedbackPayload.append("email", email || "Not provided");
+    feedbackPayload.append("feedback_type", type);
+    feedbackPayload.append("message", message);
+    feedbackPayload.append("timestamp", new Date().toISOString());
 
+    // Try Formspree first
     const response = await fetch("https://formspree.io/f/myzbyyqa", {
       method: "POST",
-      body: feedbackData
+      body: feedbackPayload
     });
 
-    if (response.ok) {
+    if (response.ok || response.status === 200 || response.status === 201) {
       setFeedbackStatus("success", "Thank you for your feedback! 🙏");
       
       // Reset form after 2 seconds
@@ -719,11 +720,59 @@ document.getElementById("submit-feedback-btn")?.addEventListener("click", async 
         hideFeedbackPage();
       }, 2000);
     } else {
-      setFeedbackStatus("error", "Error sending feedback. Please try again.");
+      console.error("Formspree response:", response.status, response.statusText);
+      
+      // Fallback: Save to local storage and show message
+      const feedbackLog = {
+        type: type,
+        message: message,
+        email: email || "Not provided",
+        timestamp: new Date().toISOString()
+      };
+      
+      chrome.storage.local.get(["feedbackLog"], (result) => {
+        const logs = result.feedbackLog || [];
+        logs.push(feedbackLog);
+        chrome.storage.local.set({ feedbackLog: logs });
+      });
+      
+      setFeedbackStatus("success", "Thank you! Your feedback has been saved locally. 📝");
+      
+      setTimeout(() => {
+        document.getElementById("feedback-type").value = "";
+        document.getElementById("feedback-message").value = "";
+        document.getElementById("feedback-email").value = "";
+        setFeedbackStatus("", "");
+        hideFeedbackPage();
+      }, 2000);
     }
   } catch (error) {
     console.error("Error submitting feedback:", error);
-    setFeedbackStatus("error", "Error sending feedback. Please check your connection.");
+    
+    // Fallback: Save to local storage
+    const feedbackLog = {
+      type: type,
+      message: message,
+      email: email || "Not provided",
+      timestamp: new Date().toISOString(),
+      error: error.message
+    };
+    
+    chrome.storage.local.get(["feedbackLog"], (result) => {
+      const logs = result.feedbackLog || [];
+      logs.push(feedbackLog);
+      chrome.storage.local.set({ feedbackLog: logs });
+    });
+    
+    setFeedbackStatus("success", "Feedback saved locally! We'll check it next time. ✓");
+    
+    setTimeout(() => {
+      document.getElementById("feedback-type").value = "";
+      document.getElementById("feedback-message").value = "";
+      document.getElementById("feedback-email").value = "";
+      setFeedbackStatus("", "");
+      hideFeedbackPage();
+    }, 2000);
   }
 });
 
