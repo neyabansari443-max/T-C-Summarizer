@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>T&C Summarizer</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main class="popup">
+    <section id="auth-container">
+      <div class="auth-card">
+        <div class="auth-logo-mark"></div>
+        <h2 class="auth-title">Welcome to SummIt</h2>
+        <p class="auth-subtitle" id="auth-subtitle">Sign in to access your Terms &amp; Conditions assistant.</p>
+
+        <form id="signin-form" class="auth-form">
+          <label class="auth-label" for="signin-email">Email address</label>
+          <input id="signin-email" type="email" class="auth-input" autocomplete="email" required>
+
+          <label class="auth-label" for="signin-password">Password</label>
+          <input id="signin-password" type="password" class="auth-input" autocomplete="current-password" required>
+
+          <button type="submit" class="primary-button">Sign in</button>
+        </form>
+
+        <form id="signup-form" class="auth-form" style="display: none;">
+          <label class="auth-label" for="signup-email">Email address</label>
+          <input id="signup-email" type="email" class="auth-input" autocomplete="email" required>
+
+          <label class="auth-label" for="signup-password">Password</label>
+          <input id="signup-password" type="password" class="auth-input" autocomplete="new-password" minlength="6" required>
+
+          <label class="auth-label" for="signup-confirm-password">Confirm password</label>
+          <input id="signup-confirm-password" type="password" class="auth-input" autocomplete="new-password" minlength="6" required>
+
+          <button type="submit" class="primary-button">Create account</button>
+        </form>
+
+        <div class="auth-footer">
+          <span id="auth-toggle-text">Don't have an account?</span>
+          <button type="button" id="auth-toggle-button" class="link-button">Create account</button>
+        </div>
+
+        <p class="auth-message" id="auth-message"></p>
+      </div>
+    </section>
+
+    <div id="app-content" style="display: none;">
+      <header>
+        <div class="header-container">
+          <div class="header-left">
+            <button id="back-button" class="back-button" style="display: none;">&larr;</button>
+            <div class="title-status">
+              <h1 id="main-title">T&amp;C Summarizer</h1>
+              <p class="status" id="status">Ready to summarize.</p>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button id="logout-button" class="logout-button" style="display: none;">Sign out</button>
+          </div>
+        </div>
+      </header>
+
+      <div id="tab-nav">
+        <button type="button" id="summary-tab" class="tab-button active">Summarize</button>
+        <button type="button" id="history-tab" class="tab-button">History</button>
+      </div>
+
+      <section id="summary-view" class="view-panel">
+        <button id="summarize">Summarize this page</button>
+
+        <section id="summary-section" style="display: none;">
+          <div class="summary-container-wrapper">
+            <div id="result" class="result" aria-live="polite"></div>
+          </div>
+
+          <div class="question-section">
+            <h3>Ask any question about the summary</h3>
+            <div id="answer-result"></div>
+          </div>
+        </section>
+
+        <section id="ask-mode" style="display: none;">
+          <div class="question-container">
+            <input id="question-input" type="text" placeholder="Ask about data policy...">
+            <button id="ask-button">Ask</button>
+          </div>
+        </section>
+
+        <div id="suggestions-area" style="display: none;">
+          <button class="suggestion-button">What data is collected?</button>
+          <button class="suggestion-button">How is my data used?</button>
+          <button class="suggestion-button">Can I delete my data?</button>
+        </div>
+
+        <div class="bottom-buttons-container">
+          <button id="support-btn" class="bottom-button support-button">
+            <span class="button-icon">❤️</span>
+            Support the Developer
+          </button>
+          <button id="feedback-btn" class="bottom-button feedback-button">
+            <span class="button-icon">💡</span>
+            Provide Feedback
+          </button>
+        </div>
+      </section>
+
+      <section id="history-view" class="view-panel" style="display: none;">
+        <div class="history-header">
+          <span class="history-header-icon" aria-hidden="true"></span>
+          <h2 class="history-header-title">History</h2>
+        </div>
+        <div class="history-container">
+          <div class="history-list" id="history-list"></div>
+          
+            <p class="history-empty">No summaries yet. Summaries you create will show up here.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section id="detail-view" style="display: none;">
+      <div class="detail-header-full">
+        <button id="back-to-history" class="back-button-detail">← Back</button>
+        <h2 id="detail-title" class="detail-title"></h2>
+        <p id="detail-meta" class="detail-meta"></p>
+      </div>
+      
+      <div class="detail-content-full">
+        <div class="detail-section">
+          <h3>Summary</h3>
+          <div id="detail-summary" class="detail-summary-content"></div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Questions & Answers</h3>
+          <div id="detail-qa" class="detail-qa-content">
+            <p class="qa-empty">No questions asked yet. Use the summarize tab to ask questions about this summary.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Support the Developer Page -->
+    <section id="support-page" style="display: none;">
+      <div class="detail-header-full">
+        <button id="back-from-support" class="back-button-detail">← Back</button>
+        <h2 class="detail-title">Support the Developer</h2>
+      </div>
+      
+      <div class="detail-content-full">
+        <div class="detail-section">
+          <div class="support-content">
+            <div class="support-icon">❤️</div>
+            <h3 style="margin-top: 16px; text-align: center;">Help us grow!</h3>
+            <p style="text-align: center; color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; line-height: 1.5;">
+              If you find T&C Summarizer helpful, please consider supporting us. Your support helps us improve the extension and add new features.
+            </p>
+
+            <div class="support-options">
+              <button class="support-option-btn" id="github-support-btn">
+                <span class="option-icon">⭐</span>
+                <div class="option-text">
+                  <div class="option-title">Star on GitHub</div>
+                  <div class="option-desc">Show your support</div>
+                </div>
+              </button>
+
+              <button class="support-option-btn" id="coffee-support-btn">
+                <span class="option-icon">☕</span>
+                <div class="option-text">
+                  <div class="option-title">Buy Me a Coffee</div>
+                  <div class="option-desc">One-time donation</div>
+                </div>
+              </button>
+
+              <button class="support-option-btn" id="review-support-btn">
+                <span class="option-icon">⭐⭐⭐</span>
+                <div class="option-text">
+                  <div class="option-title">Leave a Review</div>
+                  <div class="option-desc">Rate on Chrome Web Store</div>
+                </div>
+              </button>
+            </div>
+
+            <div class="support-footer">
+              <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; text-align: center;">
+                Thank you for using T&C Summarizer! 🙏
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Provide Feedback Page -->
+    <section id="feedback-page" style="display: none;">
+      <div class="detail-header-full">
+        <button id="back-from-feedback" class="back-button-detail">← Back</button>
+        <h2 class="detail-title">Provide Feedback</h2>
+      </div>
+      
+      <div class="detail-content-full">
+        <div class="detail-section">
+          <div class="feedback-content">
+            <div class="feedback-icon">💡</div>
+            <h3 style="margin-top: 16px; text-align: center;">We'd love to hear from you!</h3>
+            <p style="text-align: center; color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; line-height: 1.5;">
+              Help us improve T&C Summarizer by sharing your feedback, suggestions, or reporting issues.
+            </p>
+
+            <div class="feedback-form">
+              <label class="feedback-label">Feedback Type</label>
+              <select id="feedback-type" class="feedback-input">
+                <option value="">Select type...</option>
+                <option value="bug">Bug Report</option>
+                <option value="feature">Feature Request</option>
+                <option value="suggestion">Suggestion</option>
+                <option value="other">Other</option>
+              </select>
+
+              <label class="feedback-label">Your Message</label>
+              <textarea id="feedback-message" class="feedback-input feedback-textarea" placeholder="Tell us your thoughts..."></textarea>
+
+              <label class="feedback-label">Email (optional)</label>
+              <input id="feedback-email" type="email" class="feedback-input" placeholder="your@email.com">
+
+              <button id="submit-feedback-btn" class="primary-button" style="width: 100%; margin-top: 12px;">
+                Send Feedback
+              </button>
+
+              <p id="feedback-status" style="text-align: center; margin-top: 12px; font-size: 0.9rem;"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
