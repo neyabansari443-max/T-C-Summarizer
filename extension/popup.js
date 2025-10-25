@@ -695,20 +695,16 @@ document.getElementById("submit-feedback-btn")?.addEventListener("click", async 
   setFeedbackStatus("loading", "Sending feedback...");
 
   try {
-    // Send feedback via Formspree using proper JSON format
-    const feedbackPayload = {
-      email: email || "Not provided",
-      feedback_type: type,
-      message: message,
-      timestamp: new Date().toISOString()
-    };
+    // Send feedback via Formspree using FormData (proper for Formspree)
+    const feedbackData = new FormData();
+    feedbackData.append("email", email || "Not provided");
+    feedbackData.append("feedback_type", type);
+    feedbackData.append("message", message);
+    feedbackData.append("timestamp", new Date().toISOString());
 
-    const response = await fetch("https://formspree.io/f/myzbyyqa", {
+    const response = await fetch("https://formspree.io/f/xeopqej1", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(feedbackPayload)
+      body: feedbackData
     });
 
     console.log("Formspree response:", response.status, response.statusText);
