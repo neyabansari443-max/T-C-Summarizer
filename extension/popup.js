@@ -695,21 +695,26 @@ document.getElementById("submit-feedback-btn")?.addEventListener("click", async 
   setFeedbackStatus("loading", "Sending feedback...");
 
   try {
-    // Send feedback via Formspree using JSON
-    const feedbackPayload = new FormData();
-    feedbackPayload.append("email", email || "Not provided");
-    feedbackPayload.append("feedback_type", type);
-    feedbackPayload.append("message", message);
-    feedbackPayload.append("timestamp", new Date().toISOString());
+    // Send feedback via Formspree using proper JSON format
+    const feedbackPayload = {
+      email: email || "Not provided",
+      feedback_type: type,
+      message: message,
+      timestamp: new Date().toISOString()
+    };
 
-    // Try Formspree first
     const response = await fetch("https://formspree.io/f/myzbyyqa", {
       method: "POST",
-      body: feedbackPayload
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(feedbackPayload)
     });
 
+    console.log("Formspree response:", response.status, response.statusText);
+
     if (response.ok || response.status === 200 || response.status === 201) {
-      setFeedbackStatus("success", "Thank you for your feedback! 🙏");
+      setFeedbackStatus("success", "Thank you for your feedback! 🙏 Email sent successfully!");
       
       // Reset form after 2 seconds
       setTimeout(() => {
@@ -720,59 +725,12 @@ document.getElementById("submit-feedback-btn")?.addEventListener("click", async 
         hideFeedbackPage();
       }, 2000);
     } else {
-      console.error("Formspree response:", response.status, response.statusText);
-      
-      // Fallback: Save to local storage and show message
-      const feedbackLog = {
-        type: type,
-        message: message,
-        email: email || "Not provided",
-        timestamp: new Date().toISOString()
-      };
-      
-      chrome.storage.local.get(["feedbackLog"], (result) => {
-        const logs = result.feedbackLog || [];
-        logs.push(feedbackLog);
-        chrome.storage.local.set({ feedbackLog: logs });
-      });
-      
-      setFeedbackStatus("success", "Thank you! Your feedback has been saved locally. 📝");
-      
-      setTimeout(() => {
-        document.getElementById("feedback-type").value = "";
-        document.getElementById("feedback-message").value = "";
-        document.getElementById("feedback-email").value = "";
-        setFeedbackStatus("", "");
-        hideFeedbackPage();
-      }, 2000);
+      console.error("Formspree error:", response.status, response.statusText);
+      setFeedbackStatus("error", `Error: ${response.status} - Please try again`);
     }
   } catch (error) {
     console.error("Error submitting feedback:", error);
-    
-    // Fallback: Save to local storage
-    const feedbackLog = {
-      type: type,
-      message: message,
-      email: email || "Not provided",
-      timestamp: new Date().toISOString(),
-      error: error.message
-    };
-    
-    chrome.storage.local.get(["feedbackLog"], (result) => {
-      const logs = result.feedbackLog || [];
-      logs.push(feedbackLog);
-      chrome.storage.local.set({ feedbackLog: logs });
-    });
-    
-    setFeedbackStatus("success", "Feedback saved locally! We'll check it next time. ✓");
-    
-    setTimeout(() => {
-      document.getElementById("feedback-type").value = "";
-      document.getElementById("feedback-message").value = "";
-      document.getElementById("feedback-email").value = "";
-      setFeedbackStatus("", "");
-      hideFeedbackPage();
-    }, 2000);
+    setFeedbackStatus("error", "Network error. Please check your connection.");
   }
 });
 
