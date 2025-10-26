@@ -695,14 +695,14 @@ document.getElementById("submit-feedback-btn")?.addEventListener("click", async 
   setFeedbackStatus("loading", "Sending feedback...");
 
   try {
-    // Send feedback via Formspree using FormData (proper for Formspree)
+    // Send feedback via Formspree using FormData
+    // Formspree requires: email (optional), message, and _replyto (optional)
     const feedbackData = new FormData();
     feedbackData.append("email", email || "Not provided");
-    feedbackData.append("feedback_type", type);
-    feedbackData.append("message", message);
-    feedbackData.append("timestamp", new Date().toISOString());
+    feedbackData.append("message", `Type: ${type}\n\nMessage: ${message}`);
+    feedbackData.append("_replyto", email || "noreply@example.com");
 
-    const response = await fetch("https://formspree.io/f/xeopqej1", {
+    const response = await fetch("https://formspree.io/f/xeopqejl", {
       method: "POST",
       body: feedbackData
     });
