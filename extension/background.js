@@ -1,4 +1,3 @@
-const PROD_ENDPOINT = "https://75b18f82-39ee-49ac-9b5d-cc24473a3299-00-1ktg0nd2bo6wq.pike.replit.dev/summarise";
 const LOCAL_ENDPOINT = "http://localhost:3000/summarise";
 
 async function requestSummaryFromEndpoint(endpoint, pageText) {
@@ -18,7 +17,7 @@ async function requestSummaryFromEndpoint(endpoint, pageText) {
 }
 
 async function fetchSummary(pageText) {
-  const endpoints = [PROD_ENDPOINT, LOCAL_ENDPOINT];
+  const endpoints = [LOCAL_ENDPOINT];
   let lastError = null;
 
   for (const endpoint of endpoints) {
