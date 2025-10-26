@@ -934,13 +934,13 @@ onAuthStateChanged(auth, async (user) => {
         await sendEmailVerification(user);
         queueAuthNotice(
           "error",
-          `Please verify your email (${user.email ?? "your account"}). We've sent a verification link. Once verified, sign in again.`
+          `Please verify your email (${user.email ?? "your account"}). We've sent a verification link. Once verified, sign in again.\n\n💡 Tip: Check your spam folder too! (Gmail loves to hide our emails there 😅 - We promise we're legitimate!)`
         );
       } catch (error) {
         console.error("Verification email error:", error);
         queueAuthNotice(
           "error",
-          "Please verify your email. We couldn't send the verification email automatically. Try again later."
+          "Please verify your email. We couldn't send the verification email automatically. Try again later.\n\n💡 Tip: Check your spam folder! It might be hiding there."
         );
       }
 
