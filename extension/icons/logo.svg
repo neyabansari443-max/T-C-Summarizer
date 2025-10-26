@@ -1,0 +1,7 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pink background rounded square -->
+  <rect width="128" height="128" rx="24" fill="#ec407a"/>
+  
+  <!-- White star -->
+  <path d="M64 20 L76 52 L110 52 L84 74 L96 106 L64 84 L32 106 L44 74 L18 52 L52 52 Z" fill="white"/>
+</svg>

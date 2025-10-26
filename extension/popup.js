@@ -687,44 +687,51 @@ document.getElementById("submit-feedback-btn")?.addEventListener("click", async 
   const email = document.getElementById("feedback-email")?.value;
   const statusElement = document.getElementById("feedback-status");
 
-  if (!type || !message) {
-    setFeedbackStatus("error", "Please fill in all required fields");
+  if (!type || !message || !email) {
+    setFeedbackStatus("error", "Please fill in all required fields (Email is required)");
     return;
   }
 
   setFeedbackStatus("loading", "Sending feedback...");
 
   try {
-    // Send feedback via Formspree using FormData
-    // Formspree requires: email (optional), message, and _replyto (optional)
-    const feedbackData = new FormData();
-    feedbackData.append("email", email || "Not provided");
-    feedbackData.append("message", `Type: ${type}\n\nMessage: ${message}`);
-    feedbackData.append("_replyto", email || "noreply@example.com");
+    // Data ko ek plain JavaScript object banayein (Yeh JSON method hai)
+    const feedbackData = {
+      email: email || "Not provided",
+      feedback_type: type, // Aapke naye form ka field
+      message: message       // Aapke naye form ka field
+    };
 
-    const response = await fetch("https://formspree.io/f/xeopqejl", {
+    // Aapka naya Formspree URL
+    const response = await fetch("https://formspree.io/f/xeopqejl", { 
       method: "POST",
-      body: feedbackData
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json' // Yeh line zaroori hai
+      },
+      body: JSON.stringify(feedbackData) // Isse data JSON string ban jaata hai
     });
 
-    console.log("Formspree response:", response.status, response.statusText);
-
-    if (response.ok || response.status === 200 || response.status === 201) {
-      setFeedbackStatus("success", "Thank you for your feedback! 🙏 Email sent successfully!");
+    if (response.ok) {
+      setFeedbackStatus("success", "Thank you for your feedback! 🙏");
       
-      // Reset form after 2 seconds
+      // Form ko reset karein (Aapka success code)
       setTimeout(() => {
         document.getElementById("feedback-type").value = "";
         document.getElementById("feedback-message").value = "";
         document.getElementById("feedback-email").value = "";
         setFeedbackStatus("", "");
-        hideFeedbackPage();
+        hideFeedbackPage(); // Agar yeh function hai toh
       }, 2000);
+
     } else {
-      console.error("Formspree error:", response.status, response.statusText);
+      // Server se error aaya (jaise 422)
+      console.error("Formspree response error:", response.status);
       setFeedbackStatus("error", `Error: ${response.status} - Please try again`);
     }
+
   } catch (error) {
+    // Network ya connection error
     console.error("Error submitting feedback:", error);
     setFeedbackStatus("error", "Network error. Please check your connection.");
   }
@@ -1079,6 +1086,12 @@ summarizeButton.addEventListener("click", async () => {
         suggestionsArea.style.display = "none";
       }
       updateStatus(summaryText);
+      
+      // Auto-hide error message after 5 seconds
+      setTimeout(() => {
+        statusMsg.remove();
+      }, 5000);
+      
       return;
     }
 

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "SummIt - T&C Summarizer",
+  "name": "Summarizer - T&C Summarizer",
   "version": "1.0",
   "description": "Summarizes long Terms & Conditions into simple points using AI.",
   "action": {
@@ -35,6 +35,7 @@
   ],
   "host_permissions": [
     "https://75b18f82-39ee-49ac-9b5d-cc24473a3299-00-1ktg0nd2bo6wq.pike.replit.dev/*",
-    "http://localhost:3000/*"
+    "http://localhost:3000/*",
+    "https://formspree.io/*"
   ]
 }
