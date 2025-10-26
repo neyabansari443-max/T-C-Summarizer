@@ -1,4 +1,4 @@
-const LOCAL_ENDPOINT = "http://localhost:3000/summarise";
+const RENDER_ENDPOINT = "https://t-c-summarizer.onrender.com/summarise";
 
 async function requestSummaryFromEndpoint(endpoint, pageText) {
   const response = await fetch(endpoint, {
@@ -17,7 +17,7 @@ async function requestSummaryFromEndpoint(endpoint, pageText) {
 }
 
 async function fetchSummary(pageText) {
-  const endpoints = [LOCAL_ENDPOINT];
+  const endpoints = [RENDER_ENDPOINT];
   let lastError = null;
 
   for (const endpoint of endpoints) {

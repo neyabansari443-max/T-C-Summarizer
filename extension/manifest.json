@@ -34,6 +34,7 @@
     "scripting"
   ],
   "host_permissions": [
+    "https://t-c-summarizer.onrender.com/*",
     "http://localhost:3000/*",
     "https://formspree.io/*"
   ]
